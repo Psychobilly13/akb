@@ -1,4 +1,4 @@
-const env = require('../../../utils/env');
+const env = require('../../../../utils/env');
 
 const cookieSetAuthTokens = (
     req,

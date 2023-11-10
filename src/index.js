@@ -1,4 +1,4 @@
-const bootstrap = require('./controllers/server');
+const bootstrap = require('./http/controllers/server');
 
 bootstrap();
 

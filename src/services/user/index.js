@@ -77,9 +77,32 @@ function UserService() {
     return user?.toObject();
   }
 
-  function list() {
-    // TODO: list getting
-    console.log('list');
+  async function list(page = 1, size = 10) {
+    const q = {
+      status: {$ne: 'deleted'},
+    };
+
+    const [results, count] = await _findAndCountManyByQuery(q, {
+      limit: size,
+      skip: (page - 1) * size,
+    });
+
+    return {results, settings: {page, size, count}};
+  }
+
+  // TODO: maybe should think about BaseService for methods like this
+  async function _findAndCountManyByQuery(
+      query,
+      options,
+  ) {
+    const count = await User.countDocuments(query);
+    const results = await User.find(
+        query,
+        {_id: 0, __v: 0},
+        {lean: true, ...options},
+    );
+
+    return [results, count];
   }
 
   return {create, update, remove, get, list};

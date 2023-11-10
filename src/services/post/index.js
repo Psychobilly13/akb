@@ -27,7 +27,6 @@ const postSchema = new Schema({
   },
   tags: {
     type: [String],
-    // enum: ['active', 'blocked', 'deleted'],
     required: false,
   },
 });
@@ -83,11 +82,10 @@ function PostService() {
     };
 
     if (tags) {
-      q.tags = {$in: tags};
-      
+      q.tags = {$all: tags};
     }
-    if(type) {
-        q.type = type;
+    if (type) {
+      q.type = type;
     }
 
     const [results, count] = await _findAndCountManyByQuery(q, {

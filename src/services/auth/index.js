@@ -7,8 +7,8 @@ function AuthService(userService, redisProvider) {
   const tokenExpire = parseInt(env('TOKEN_EXPIRE', 15778800));
 
   async function authByPassword(data) {
-    const nickname = data.nickname.toLowerCase().trim();
-    const user = await userService.get({nickname});
+    const email = data.email.toLowerCase().trim();
+    const user = await userService.get({email});
     if (!user || user.status === 'deleted') {
       const err = new Error('user.notFound');
       err.statusCode = 404;
@@ -27,6 +27,16 @@ function AuthService(userService, redisProvider) {
     return randomBytes(Math.ceil(length / 2))
         .toString('hex')
         .slice(0, length);
+  }
+
+  async function changeAuthTokenPairByRefreshToken(token) {
+    const user = await getSessionUserByRefreshToken(token)
+    if(!user) {
+      const err = new Error('auth.invalidToken');
+      err.statusCode = 401;
+      throw err;
+    }
+    return createAuthSession(user);
   }
 
   async function createAuthSession(user) {
@@ -95,6 +105,13 @@ function AuthService(userService, redisProvider) {
     return foundToken;
   }
 
+  async function getRefreshTokenData(token) {
+    const foundToken = redisProvider.hgetall(
+        `session:token:refresh:${token}`,
+    );
+    return foundToken;
+  }
+
   async function getSessionUserByAccessToken(
       token,
   ) {
@@ -106,7 +123,18 @@ function AuthService(userService, redisProvider) {
     return user;
   }
 
-  return {authByPassword, createAuthSession, getSessionUserByAccessToken};
+  async function getSessionUserByRefreshToken(
+    token,
+) {
+  const {uuidUser: uuid} = (await getRefreshTokenData(token)) || {};
+  if (!uuid) {
+    return undefined;
+  }
+  const user = await getAuthUser(uuid);
+  return user;
+}
+
+  return {authByPassword, createAuthSession, getSessionUserByAccessToken, changeAuthTokenPairByRefreshToken};
 }
 
 module.exports = AuthService;

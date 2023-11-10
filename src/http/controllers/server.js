@@ -1,11 +1,13 @@
-const redisProvider = require('../storages/redis/redis');
-const mongoProvider = require('../storages/mongo/mongo');
+const redisProvider = require('../../storages/redis/redis');
+const mongoProvider = require('../../storages/mongo/mongo');
 const authController = require('./auth');
-const userService = require('../services/user');
-const authService = require('../services/auth');
-const postService = require('../services/post');
+const userController = require('./user');
+const userService = require('../../services/user');
+const authService = require('../../services/auth');
+const postService = require('../../services/post');
 const fastifyCookie = require('@fastify/cookie');
-const env = require('../utils/env');
+const fastifySchemaValidator = require('@fastify/response-validation')
+const env = require('../../utils/env');
 const postController = require('./post/post.controller');
 const postPublicController = require('./post/post.public.controller');
 
@@ -39,7 +41,9 @@ async function bootstrap() {
       .register(authController)
       .register(postController)
       .register(postPublicController)
-      .register(fastifyCookie);
+      .register(userController)
+      .register(fastifyCookie)
+      .register(fastifySchemaValidator)
   try {
     await fastify.listen({host, port});
     console.debug(`> Server running > ${host}:${port}`);
