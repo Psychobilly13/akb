@@ -1,6 +1,5 @@
 const {formatUserToPublic} = require('../../services/auth/utils/formatter');
-const { cookieSetAuthTokens, cookieDelAuthTokens } = require('./utils/cookie');
-const accessByToken = require('./utils/grandByToken');
+const {cookieSetAuthTokens, cookieDelAuthTokens} = require('./utils/cookie');
 
 async function authController(fastify) {
   fastify.post(
@@ -41,8 +40,8 @@ async function authController(fastify) {
       },
       async (req, rep) => {
         // TODO: this function here for test. should do preHandler with postController
-        await accessByToken(req, rep)
-        cookieDelAuthTokens(req, rep)
+        // await accessByToken(req, rep)
+        cookieDelAuthTokens(req, rep);
       },
   );
 }

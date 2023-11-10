@@ -3,36 +3,45 @@ const mongoProvider = require('../storages/mongo/mongo');
 const authController = require('./auth');
 const userService = require('../services/user');
 const authService = require('../services/auth');
+const postService = require('../services/post');
 const fastifyCookie = require('@fastify/cookie');
 const env = require('../utils/env');
+const postController = require('./post/post.controller');
+const postPublicController = require('./post/post.public.controller');
+
 
 async function bootstrap() {
-  const host = env("API_HOST", "localhost")
-  const port = env("API_PORT", 8080)
+  const host = env('API_HOST', 'localhost');
+  const port = env('API_PORT', 8080);
   const fastify = require('fastify')({
     logger: true,
   });
 
-  // services
+  // dbs
   const redis = redisProvider();
-  const user = userService();
-  const auth = authService(user, redis);
+  mongoProvider();
 
+  // services
+  fastify.addHook('onRequest', (req, rep, done) => {
+    req.user = {};
+    req.services = {};
+    done();
+  });
   fastify.addHook('preHandler', (req, _res, next) => {
-    req.services = {auth, redis, user};
+    const user = userService();
+    const auth = authService(user, redis);
+    const post = postService();
+    req.services = {auth, user, post};
     next();
   });
 
   fastify
-      .register(mongoProvider)
       .register(authController)
+      .register(postController)
+      .register(postPublicController)
       .register(fastifyCookie);
-  // TODO:
-  //   .register(postController);
   try {
-    await fastify.listen({host,port});
-    // const address = fastify.server.address();
-    // const port = typeof address === 'string' ? address : address?.port;
+    await fastify.listen({host, port});
     console.debug(`> Server running > ${host}:${port}`);
   } catch (err) {
     fastify.log.error(err);

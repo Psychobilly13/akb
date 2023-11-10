@@ -3,8 +3,8 @@ const {genUnixTs} = require('../../utils/date');
 const env = require('../../utils/env');
 
 function AuthService(userService, redisProvider) {
-    const tokenLength = parseInt(env("TOKEN_LENGTH", 32))
-    const tokenExpire = parseInt(env("TOKEN_EXPIRE", 15778800))
+  const tokenLength = parseInt(env('TOKEN_LENGTH', 32));
+  const tokenExpire = parseInt(env('TOKEN_EXPIRE', 15778800));
 
   async function authByPassword(data) {
     const nickname = data.nickname.toLowerCase().trim();
@@ -80,7 +80,33 @@ function AuthService(userService, redisProvider) {
     ]);
   }
 
-  return {authByPassword, createAuthSession};
+  async function getAuthUser(uuid) {
+    const user = await redisProvider.hgetall(`session:user:${uuid}`);
+    if (!(user && Object.keys(user).length)) {
+      return undefined;
+    }
+    return user;
+  }
+
+  async function getAccessTokenData(token) {
+    const foundToken = redisProvider.hgetall(
+        `session:token:access:${token}`,
+    );
+    return foundToken;
+  }
+
+  async function getSessionUserByAccessToken(
+      token,
+  ) {
+    const {uuidUser: uuid} = (await getAccessTokenData(token)) || {};
+    if (!uuid) {
+      return undefined;
+    }
+    const user = await getAuthUser(uuid);
+    return user;
+  }
+
+  return {authByPassword, createAuthSession, getSessionUserByAccessToken};
 }
 
 module.exports = AuthService;
