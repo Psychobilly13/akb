@@ -14,25 +14,23 @@ for local starting you should comment .env file and run
 
 **API**  
 _there is postman collection in .devel directory._  
-auth  
+*auth*  
 | method  | route               | description           |
 |---------|---------------------|-----------------------|
 | POST    | /auth/register      | registartion          |
 | POST    | /auth/login         | login and auth        |
 | POST    | /auth/refresh       | auth by refresh token |
 | POST    | /auth/logout        | logout                |  
-|---------|---------------------|-----------------------|
-
-user  
+  
+*user*  
 | method  | route               | description           |
 |---------|---------------------|-----------------------|
 | PUT     | /user/:uuid         | update nickname       |
 | GET     | /user/list          | get list of users     |
 | GET     | /user/:uuid         | get one user by uuid  |
 | DELETE  | /user/:uuid         | delete user by uuid   |  
-|---------|---------------------|-----------------------|
-
-post  
+  
+*post*  
 | method  | route               | description           |
 |---------|---------------------|-----------------------|
 | POST    | /post               | create post           |
@@ -40,4 +38,3 @@ post
 | GET     | /post/list          | get list of posts     |
 | GET     | /post/:uuid         | get one post by uuid  |
 | DELETE  | /post/:uuid         | delete post by uuid   |
-|---------|---------------------|-----------------------|
