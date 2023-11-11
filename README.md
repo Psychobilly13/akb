@@ -20,14 +20,16 @@ auth
 | POST    | /auth/register      | registartion          |
 | POST    | /auth/login         | login and auth        |
 | POST    | /auth/refresh       | auth by refresh token |
-| POST    | /auth/logout        | logout                |
+| POST    | /auth/logout        | logout                |  
+
 user  
 | method  | route               | description           |
 |---------|---------------------|-----------------------|
 | PUT     | /user/:uuid         | update nickname       |
 | GET     | /user/list          | get list of users     |
 | GET     | /user/:uuid         | get one user by uuid  |
-| DELETE  | /user/:uuid         | delete user by uuid   |
+| DELETE  | /user/:uuid         | delete user by uuid   |  
+
 post  
 | method  | route               | description           |
 |---------|---------------------|-----------------------|
