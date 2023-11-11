@@ -3,12 +3,12 @@ const {genUnixTs} = require('../../utils/date');
 const env = require('../../utils/env');
 
 function AuthService(userService, redisProvider) {
-    const tokenLength = parseInt(env("TOKEN_LENGTH", 32))
-    const tokenExpire = parseInt(env("TOKEN_EXPIRE", 15778800))
+  const tokenLength = parseInt(env('TOKEN_LENGTH', 32));
+  const tokenExpire = parseInt(env('TOKEN_EXPIRE', 15778800));
 
   async function authByPassword(data) {
-    const nickname = data.nickname.toLowerCase().trim();
-    const user = await userService.get({nickname});
+    const email = data.email.toLowerCase().trim();
+    const user = await userService.get({email});
     if (!user || user.status === 'deleted') {
       const err = new Error('user.notFound');
       err.statusCode = 404;
@@ -27,6 +27,16 @@ function AuthService(userService, redisProvider) {
     return randomBytes(Math.ceil(length / 2))
         .toString('hex')
         .slice(0, length);
+  }
+
+  async function changeAuthTokenPairByRefreshToken(token) {
+    const user = await getSessionUserByRefreshToken(token)
+    if(!user) {
+      const err = new Error('auth.invalidToken');
+      err.statusCode = 401;
+      throw err;
+    }
+    return createAuthSession(user);
   }
 
   async function createAuthSession(user) {
@@ -80,7 +90,51 @@ function AuthService(userService, redisProvider) {
     ]);
   }
 
-  return {authByPassword, createAuthSession};
+  async function getAuthUser(uuid) {
+    const user = await redisProvider.hgetall(`session:user:${uuid}`);
+    if (!(user && Object.keys(user).length)) {
+      return undefined;
+    }
+    return user;
+  }
+
+  async function getAccessTokenData(token) {
+    const foundToken = redisProvider.hgetall(
+        `session:token:access:${token}`,
+    );
+    return foundToken;
+  }
+
+  async function getRefreshTokenData(token) {
+    const foundToken = redisProvider.hgetall(
+        `session:token:refresh:${token}`,
+    );
+    return foundToken;
+  }
+
+  async function getSessionUserByAccessToken(
+      token,
+  ) {
+    const {uuidUser: uuid} = (await getAccessTokenData(token)) || {};
+    if (!uuid) {
+      return undefined;
+    }
+    const user = await getAuthUser(uuid);
+    return user;
+  }
+
+  async function getSessionUserByRefreshToken(
+    token,
+) {
+  const {uuidUser: uuid} = (await getRefreshTokenData(token)) || {};
+  if (!uuid) {
+    return undefined;
+  }
+  const user = await getAuthUser(uuid);
+  return user;
+}
+
+  return {authByPassword, createAuthSession, getSessionUserByAccessToken, changeAuthTokenPairByRefreshToken};
 }
 
 module.exports = AuthService;

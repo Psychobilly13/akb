@@ -1,8 +1,8 @@
 const Redis = require('ioredis');
 const env = require('../../utils/env');
 
-const host = env("REDIS_HOST", 'localhost');
-const port = env("REDIS_PORT", 6379);
+const host = env('REDIS_HOST', 'localhost');
+const port = env('REDIS_PORT', 6379);
 
 function buildRedis() {
   const redisClient = new Redis({
