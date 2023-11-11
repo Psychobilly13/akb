@@ -22,6 +22,7 @@ auth
 | POST    | /auth/refresh       | auth by refresh token |
 | POST    | /auth/logout        | logout                |  
 |---------|---------------------|-----------------------|
+
 user  
 | method  | route               | description           |
 |---------|---------------------|-----------------------|
@@ -30,6 +31,7 @@ user
 | GET     | /user/:uuid         | get one user by uuid  |
 | DELETE  | /user/:uuid         | delete user by uuid   |  
 |---------|---------------------|-----------------------|
+
 post  
 | method  | route               | description           |
 |---------|---------------------|-----------------------|
