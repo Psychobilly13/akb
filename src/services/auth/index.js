@@ -6,6 +6,20 @@ function AuthService(userService, redisProvider) {
   const tokenLength = parseInt(env('TOKEN_LENGTH', 32));
   const tokenExpire = parseInt(env('TOKEN_EXPIRE', 15778800));
 
+  /**
+   * @param {{
+   * email: string,
+   * password: string,
+   * }} data
+   * @return {Promise<{
+   *   uuid: string,
+   *   dates: { created: number, updated: number },
+   *   nickname: string,
+   *   email: string,
+   *   password: string,
+   *   status: string,
+   * }>}
+   */
   async function authByPassword(data) {
     const email = data.email.toLowerCase().trim();
     const user = await userService.get({email});
@@ -23,6 +37,11 @@ function AuthService(userService, redisProvider) {
     return user;
   }
 
+  // TODO: JSDocs for session logic
+  /**
+   * @param {number} length
+   * @return {string}
+   */
   function generateToken(length) {
     return randomBytes(Math.ceil(length / 2))
         .toString('hex')
@@ -30,8 +49,8 @@ function AuthService(userService, redisProvider) {
   }
 
   async function changeAuthTokenPairByRefreshToken(token) {
-    const user = await getSessionUserByRefreshToken(token)
-    if(!user) {
+    const user = await getSessionUserByRefreshToken(token);
+    if (!user) {
       const err = new Error('auth.invalidToken');
       err.statusCode = 401;
       throw err;
@@ -124,15 +143,15 @@ function AuthService(userService, redisProvider) {
   }
 
   async function getSessionUserByRefreshToken(
-    token,
-) {
-  const {uuidUser: uuid} = (await getRefreshTokenData(token)) || {};
-  if (!uuid) {
-    return undefined;
+      token,
+  ) {
+    const {uuidUser: uuid} = (await getRefreshTokenData(token)) || {};
+    if (!uuid) {
+      return undefined;
+    }
+    const user = await getAuthUser(uuid);
+    return user;
   }
-  const user = await getAuthUser(uuid);
-  return user;
-}
 
   return {authByPassword, createAuthSession, getSessionUserByAccessToken, changeAuthTokenPairByRefreshToken};
 }

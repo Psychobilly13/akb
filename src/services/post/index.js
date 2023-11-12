@@ -34,6 +34,26 @@ const postSchema = new Schema({
 const Post = mongoose.model('Post', postSchema);
 
 function PostService() {
+  /**
+   * @param {{
+   * title: string,
+   * content: string,
+   * status: string,
+   * type: string,
+   * tags: string[]
+   * }} data
+   * @param {string} uuidUser
+   * @return {Promise<{
+   * uuid: string,
+   * ids: {uuidUser: string},
+   * dates: { created: number, updated: number },
+   * title: string,
+   * content: string,
+   * status: string,
+   * type: string,
+   * tags: string[]
+   * }>}
+   */
   async function create(data, uuidUser) {
     const createdPost = await Post.create({
       uuid: uuidv4(),
@@ -48,6 +68,17 @@ function PostService() {
     return createdPost.toObject();
   }
 
+  /**
+   * @param {string} uuid
+   * @param {{
+  * title: string,
+  * content: string,
+  * status: string,
+  * type: string,
+  * tags: string[]
+  * }} data
+
+  */
   async function update(uuid, data) {
     const post = await get({uuid});
     if (!post || post.status === 'deleted') {
@@ -60,6 +91,9 @@ function PostService() {
     await Post.updateOne({uuid: updatedData.uuid}, updatedData);
   }
 
+  /**
+   * @param {string} uuid
+   */
   async function remove(uuid) {
     const post = await get({uuid});
     if (!post || post.status === 'deleted') {
@@ -71,11 +105,49 @@ function PostService() {
     await Post.updateOne({uuid: updatedData.uuid}, updatedData);
   }
 
+  /**
+   *
+   * @param {Record<string, string>} keyVal
+   * @return {Promise<{
+   * uuid: string,
+   * ids: {uuidUser: string},
+   * dates: { created: number, updated: number },
+   * title: string,
+   * content: string,
+   * status: string,
+   * type: string,
+   * tags: string[]
+   * }>}
+   */
   async function get(keyVal) {
     const post = await Post.findOne(keyVal, {_id: 0, __v: 0});
     return post?.toObject();
   }
 
+  /**
+   *
+   * @param {number} page
+   * @param {number} size
+   * @param {string[]} tags
+   * @param {string} type
+   * @return {Promise<{
+   *   results: [{
+   * uuid: string,
+   * ids: {uuidUser: string},
+   * dates: { created: number, updated: number },
+   * title: string,
+   * content: string,
+   * status: string,
+   * type: string,
+   * tags: string[]
+   * }],
+   *   settings: {
+   *     page: number,
+   *     size: number,
+   *     count: number
+   *   }
+   * }>}
+   */
   async function list(page = 1, size = 10, tags, type) {
     const q = {
       status: {$ne: 'deleted'},
@@ -97,6 +169,24 @@ function PostService() {
   }
 
   // TODO: maybe should think about BaseService for methods like this
+  /**
+   *
+   * @param {Record<string,any>} query
+   * @param {Record<string,any>} options
+   * @return {Promise<{
+   *    results: [{
+   * uuid: string,
+   * ids: {uuidUser: string},
+   * dates: { created: number, updated: number },
+   * title: string,
+   * content: string,
+   * status: string,
+   * type: string,
+   * tags: string[]
+   * }],
+   * count: number
+   * }>}
+   */
   async function _findAndCountManyByQuery(
       query,
       options,

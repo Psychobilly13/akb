@@ -24,6 +24,21 @@ const userSchema = new Schema({
 const User = mongoose.model('User', userSchema);
 
 function UserService() {
+  /**
+ * @param {{
+ *   nickname: string,
+  *   email: string,
+  *   password: string
+  * }} data
+  * @return {Promise<{
+  *   uuid: string,
+  *   dates: { created: number, updated: number },
+  *   nickname: string,
+  *   email: string,
+  *   password: string,
+  *   status: string,
+  * }>}
+  */
   async function create(data) {
     data.email = data.email.toLowerCase().trim();
     const user = await get({email: data.email});
@@ -46,10 +61,11 @@ function UserService() {
     return createdUser.toObject();
   }
 
+  /**
+   * @param {string} uuid
+   * @param {{nickname: string}} data
+   */
   async function update(uuid, data) {
-    if (data.email) {
-      data.email = data.email.toLowerCase().trim();
-    }
     const user = await get({uuid});
     if (!user || user.status === 'deleted') {
       const err = new Error('user.notFound');
@@ -61,6 +77,9 @@ function UserService() {
     await User.updateOne({uuid: updatedData.uuid}, updatedData);
   }
 
+  /**
+   * @param {string} uuid
+   */
   async function remove(uuid) {
     const user = await get({uuid});
     if (!user || user.status === 'deleted') {
@@ -72,11 +91,41 @@ function UserService() {
     await User.updateOne({uuid: user.uuid}, updatedData);
   }
 
+  /**
+ * @param {Record<string, string>} keyVal
+ * @return {Promise<{
+ *   uuid: string,
+ *   dates: { created: number, updated: number },
+ *   nickname: string,
+ *   email: string,
+ *   password: string,
+ *   status: string,
+ * }>}
+ */
   async function get(keyVal) {
     const user = await User.findOne(keyVal, {_id: 0, __v: 0});
     return user?.toObject();
   }
 
+  /**
+ * @param {number} page
+ * @param {number} size
+ * @return {Promise<{
+ *   results: [{
+  *     uuid: string,
+  *     dates: { created: number, updated: number },
+  *     nickname: string,
+  *     email: string,
+  *     password: string,
+  *     status: string
+  *   }],
+  *   settings: {
+  *     page: number,
+  *     size: number,
+  *     count: number
+  *   }
+  * }>}
+  */
   async function list(page = 1, size = 10) {
     const q = {
       status: {$ne: 'deleted'},
@@ -91,6 +140,21 @@ function UserService() {
   }
 
   // TODO: maybe should think about BaseService for methods like this
+  /**
+ * @param {Record<string, any>} query
+ * @param {Record<string, any>} options
+ * @return {Promise<{
+ *   results: [{
+ *     uuid: string,
+ *     dates: { created: number, updated: number },
+ *     nickname: string,
+ *     email: string,
+ *     password: string,
+ *     status: string
+ *   }],
+ *   count: number
+ * }>}
+ */
   async function _findAndCountManyByQuery(
       query,
       options,
