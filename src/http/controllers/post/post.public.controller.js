@@ -8,14 +8,14 @@ async function postPublicController(fastify) {
           query: {
             type: 'object',
             properties: {
-              page: { type: 'integer' },
-              size: { type: 'integer' },
+              page: {type: 'integer'},
+              size: {type: 'integer'},
               tags: {
                 type: 'array',
-                items: { type: 'string' }
-              }
-            }
-          }
+                items: {type: 'string'},
+              },
+            },
+          },
         },
       },
       async (req, rep) => {
@@ -39,10 +39,10 @@ async function postPublicController(fastify) {
             properties: {
               uuid: {
                 type: 'string',
-                format: 'uuid'
-              }
+                format: 'uuid',
+              },
             },
-            required: ['uuid']
+            required: ['uuid'],
           },
         },
       },

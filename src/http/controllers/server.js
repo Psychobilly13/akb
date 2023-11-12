@@ -6,7 +6,7 @@ const userService = require('../../services/user');
 const authService = require('../../services/auth');
 const postService = require('../../services/post');
 const fastifyCookie = require('@fastify/cookie');
-const fastifySchemaValidator = require('@fastify/response-validation')
+const fastifySchemaValidator = require('@fastify/response-validation');
 const env = require('../../utils/env');
 const postController = require('./post/post.controller');
 const postPublicController = require('./post/post.public.controller');
@@ -43,7 +43,7 @@ async function bootstrap() {
       .register(postPublicController)
       .register(userController)
       .register(fastifyCookie)
-      .register(fastifySchemaValidator)
+      .register(fastifySchemaValidator);
   try {
     await fastify.listen({host, port});
     console.debug(`> Server running > ${host}:${port}`);

@@ -7,23 +7,23 @@ async function postController(fastify) {
       '/post',
       {
         schema: {
-           body: {
-             type: 'object',
-             required: ['title', 'content', 'status', 'type'],
-             properties: {
-              title: { type: 'string', minLength: 1},
-              content: { type: 'string'},
-              status:  { type: 'string'},
-              type:  { type: 'string'},
+          body: {
+            type: 'object',
+            required: ['title', 'content', 'status', 'type'],
+            properties: {
+              title: {type: 'string', minLength: 1},
+              content: {type: 'string'},
+              status: {type: 'string'},
+              type: {type: 'string'},
               tags: {
                 type: 'array',
-                items: { type: 'string' }
-              }
-             },
-             additionalProperties: false,
-           }
-         },
-       },
+                items: {type: 'string'},
+              },
+            },
+            additionalProperties: false,
+          },
+        },
+      },
       async (req, _rep) => {
         await req.services.post.create(req.body, req.user.uuid);
       },
@@ -38,27 +38,27 @@ async function postController(fastify) {
             properties: {
               uuid: {
                 type: 'string',
-                format: 'uuid'
-              }
+                format: 'uuid',
+              },
             },
-            required: ['uuid']
+            required: ['uuid'],
           },
-           body: {
-             type: 'object',
-             properties: {
-              title: { type: 'string', minLength: 1},
-              content: { type: 'string'},
-              status:  { type: 'string'},
-              type:  { type: 'string'},
+          body: {
+            type: 'object',
+            properties: {
+              title: {type: 'string', minLength: 1},
+              content: {type: 'string'},
+              status: {type: 'string'},
+              type: {type: 'string'},
               tags: {
                 type: 'array',
-                items: { type: 'string' }
-              }
-             },
-             additionalProperties: false,
-           }
-         },
-       },
+                items: {type: 'string'},
+              },
+            },
+            additionalProperties: false,
+          },
+        },
+      },
       async (req, _rep) => {
         await req.services.post.update(req.params.uuid, req.body);
       },
@@ -73,13 +73,13 @@ async function postController(fastify) {
             properties: {
               uuid: {
                 type: 'string',
-                format: 'uuid'
-              }
+                format: 'uuid',
+              },
             },
-            required: ['uuid']
-          }
-         },
-       },
+            required: ['uuid'],
+          },
+        },
+      },
       async (req, _rep) => {
         await req.services.post.remove(req.params.uuid);
       });
