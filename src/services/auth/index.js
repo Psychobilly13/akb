@@ -43,9 +43,8 @@ function AuthService(userService, redisProvider) {
    * @return {string}
    */
   function generateToken(length) {
-    return randomBytes(Math.ceil(length / 2))
-        .toString('hex')
-        .slice(0, length);
+    return randomBytes(length)
+        .toString('hex');
   }
 
   async function changeAuthTokenPairByRefreshToken(token) {
