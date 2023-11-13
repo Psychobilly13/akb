@@ -3,7 +3,7 @@ name: CI - akb
 on:
   push:
     branches:
-      - main
+      - '*'
 
 jobs:
   test:
