@@ -7,8 +7,8 @@
 run in root of project
 `sudo docker-compose up -d`  
 _after testing don't forget run 'sudo docker-compose down -v' and delete images_  
-- local
-local starting you should comment .env file and run  
+- local  
+for local starting you should comment .env file and run  
 `npm i`  
 `npm start`  
 
