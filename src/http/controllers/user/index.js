@@ -68,6 +68,11 @@ async function userController(fastify) {
       },
       async (req, rep) => {
         const user = await req.services.user.get({uuid: req.params.uuid});
+        if (!user || user.status === 'deleted') {
+          const err = new Error('user.notFound');
+          err.statusCode = 404;
+          throw err;
+        }
         rep.send(user);
       },
   );

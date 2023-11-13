@@ -1,5 +1,5 @@
 const redisProvider = require('../../storages/redis/redis');
-const mongoProvider = require('../../storages/mongo/mongo');
+const {mongoConnect} = require('../../storages/mongo/mongo');
 const authController = require('./auth');
 const userController = require('./user');
 const userService = require('../../services/user');
@@ -21,10 +21,10 @@ async function bootstrap() {
 
   // dbs
   const redis = redisProvider();
-  mongoProvider();
+  mongoConnect();
 
   // services
-  fastify.addHook('onRequest', (req, rep, done) => {
+  fastify.addHook('onRequest', (req, _rep, done) => {
     req.user = {};
     req.services = {};
     done();

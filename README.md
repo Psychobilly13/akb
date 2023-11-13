@@ -6,7 +6,7 @@
 - docker  
 run in root of project
 `sudo docker-compose up -d`  
-_after testing don't forget run 'sudo docker-compose' and delete images_  
+_after testing don't forget run 'sudo docker-compose down -v' and delete images_  
 - local
 for local starting you should comment .env file and run  
 `npm i`  
@@ -38,3 +38,7 @@ _there is postman collection in .devel directory._
 | GET     | /post/list          | get list of posts     |
 | GET     | /post/:uuid         | get one post by uuid  |
 | DELETE  | /post/:uuid         | delete post by uuid   |
+
+**Tests**  
+unit `npm run test:unit`  
+e2e `npm run test:e2e`
